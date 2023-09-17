@@ -3,19 +3,21 @@ import addBlurDataUrls from '@/app/lib/addBlurDataUrls'
 import type { ImageResult } from '@/models/Image'
 import ImageContainer from './ImageContainer'
 
-export default async function Gallery() {
-  const url = 'https://api.pexels.com/v1/curated'
+type Props = {
+  topic?: string | undefined
+}
+
+export default async function Gallery({ topic }: Props) {
+  const url = topic ? `https://api.pexels.com/v1/search?query=${topic}` : 'https://api.pexels.com/v1/curated'
   const images: ImageResult | undefined = await fetchImages(url)
 
-  if (!images) {
-    return <h2>Images not found</h2>
-  }
+  if (!images) return <h2>Images not found</h2>
 
   const photoWithBlur = await addBlurDataUrls(images)
 
   return (
     <>
-      <section className="px-2 my-3 grid gap-2 grid-cols-gallery">
+      <section className="px-1 my-3 grid grid-cols-gallery auto-rows-[10px]">
         {photoWithBlur.map((photo, index) => {
           return <ImageContainer key={photo.id} photo={photo} index={index} />
         })}
